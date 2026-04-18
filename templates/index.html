@@ -1,0 +1,145 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard{% endblock %}
+{% block page_heading %}Cybersecurity Dashboard{% endblock %}
+
+{% block content %}
+<div class="container-fluid p-0">
+    <!-- Stats Row -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-3">
+            <div class="stat-card glass-card p-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <p class="text-muted mb-1 text-uppercase small fw-bold">Emails Analyzed</p>
+                        <h3 class="fw-bold m-0">12,450</h3>
+                        <small class="text-success"><i class="fa-solid fa-arrow-up"></i> 5.2% this week</small>
+                    </div>
+                    <div class="icon-box bg-accent-glow">
+                        <i class="fa-solid fa-envelope text-white"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card glass-card p-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <p class="text-muted mb-1 text-uppercase small fw-bold">Phishing Blocked</p>
+                        <h3 class="fw-bold m-0 text-danger">1,832</h3>
+                        <small class="text-danger"><i class="fa-solid fa-arrow-up"></i> 12.1% this week</small>
+                    </div>
+                    <div class="icon-box bg-danger-glow">
+                        <i class="fa-solid fa-bug text-white"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card glass-card p-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <p class="text-muted mb-1 text-uppercase small fw-bold">Network Attacks</p>
+                        <h3 class="fw-bold m-0 text-warning">4,204</h3>
+                        <small class="text-success"><i class="fa-solid fa-arrow-down"></i> 2.4% this week</small>
+                    </div>
+                    <div class="icon-box bg-warning-glow">
+                        <i class="fa-solid fa-shield-virus text-white"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card glass-card p-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <p class="text-muted mb-1 text-uppercase small fw-bold">Normal Traffic</p>
+                        <h3 class="fw-bold m-0 text-accent">845.2K</h3>
+                        <small class="text-success"><i class="fa-solid fa-arrow-up"></i> 18.2% this week</small>
+                    </div>
+                    <div class="icon-box bg-secondary-glow">
+                        <i class="fa-solid fa-server text-white"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-6">
+            <div class="glass-card p-4 h-100">
+                <h5 class="mb-4">Email Traffic Distribution</h5>
+                <div style="height: 300px; display: flex; justify-content: center;">
+                    <canvas id="phishingPieChart"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="glass-card p-4 h-100">
+                <h5 class="mb-4">Top Network Attacks Detected</h5>
+                <div style="height: 300px;">
+                    <canvas id="idsBarChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Table Row -->
+    <div class="row">
+        <div class="col-12">
+            <div class="glass-card p-4">
+                <h5 class="mb-4">Recent Threat Activity</h5>
+                <div class="table-responsive">
+                    <table class="table table-dark table-hover table-borderless custom-table m-0">
+                        <thead>
+                            <tr>
+                                <th>Timestamp</th>
+                                <th>Threat Vector</th>
+                                <th>Source IP / Sender</th>
+                                <th>Target</th>
+                                <th>Status</th>
+                                <th>Confidence</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>2023-10-27 14:32:01</td>
+                                <td><span class="badge bg-danger">Phishing</span></td>
+                                <td>support@paypal-login-sys.com</td>
+                                <td>admin@university.edu</td>
+                                <td>Blocked</td>
+                                <td>99.2%</td>
+                            </tr>
+                            <tr>
+                                <td>2023-10-27 14:15:22</td>
+                                <td><span class="badge bg-warning">DDoS Simulation</span></td>
+                                <td>192.168.1.105</td>
+                                <td>Gateway Node</td>
+                                <td>Mitigated</td>
+                                <td>94.8%</td>
+                            </tr>
+                            <tr>
+                                <td>2023-10-27 13:42:10</td>
+                                <td><span class="badge bg-info text-dark">PortScan</span></td>
+                                <td>45.33.22.11</td>
+                                <td>App Server UI</td>
+                                <td>Logged</td>
+                                <td>88.1%</td>
+                            </tr>
+                            <tr>
+                                <td>2023-10-27 13:10:05</td>
+                                <td><span class="badge bg-danger">Brute Force</span></td>
+                                <td>10.0.0.52</td>
+                                <td>SSH Port 22</td>
+                                <td>Blocked IP</td>
+                                <td>97.5%</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

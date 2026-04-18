@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+
+{% block title %}Intrusion Detection{% endblock %}
+{% block page_heading %}Network Intrusion Detection (CICIDS2017){% endblock %}
+
+{% block content %}
+<div class="container-fluid p-0">
+    <div class="row g-4">
+        <div class="col-md-5">
+            <div class="glass-card p-4 h-100">
+                <h5 class="mb-3">Traffic Simulation</h5>
+                <p class="text-muted font-sm">This module uses a Random Forest classifier trained on the CICIDS2017 dataset to identify network anomalies. We bypass the 47 manual inputs by running automated feature extraction on PCAP/CSV files.</p>
+                
+                <div class="mt-4 network-anim-container d-flex justify-content-center align-items-center mb-4 p-4 rounded-3" style="background: rgba(0,0,0,0.3); border: 1px dashed rgba(255,255,255,0.1);">
+                    <!-- Cute fake terminal or animation area -->
+                    <div class="text-success small" style="font-family: monospace;" id="terminalOutput">
+                        > Waiting for ingestion...
+                    </div>
+                </div>
+
+                <form id="idsForm">
+                    <div class="mb-3">
+                        <label class="form-label text-muted small">Upload Network Trace (CSV/PCAP - Optional)</label>
+                        <input type="file" class="form-control glass-input" id="traceFile" accept=".csv">
+                    </div>
+                    
+                    <div class="d-flex align-items-center text-muted small mb-3">
+                        <hr class="flex-grow-1 border-secondary">
+                        <span class="mx-2">OR</span>
+                        <hr class="flex-grow-1 border-secondary">
+                    </div>
+
+                    <button type="submit" class="btn btn-secondary-accent px-4 py-2 w-100" id="testTrafficBtn">
+                        <i class="fa-solid fa-satellite-dish me-2"></i><span class="btn-text">Test Sample Traffic Stream</span>
+                        <div class="spinner-border spinner-border-sm ms-2 d-none" id="idsSpinner" role="status"></div>
+                    </button>
+                </form>
+                
+                <!-- Error Alert -->
+                <div id="idsError" class="alert alert-danger mt-3 d-none border-0 glass-alert" role="alert"></div>
+            </div>
+        </div>
+
+        <div class="col-md-7">
+            <div class="glass-card p-4 h-100 position-relative">
+                <h5 class="mb-4">IDS AI Engine Analysis</h5>
+                
+                <!-- Placeholder state before prediction -->
+                <div id="idsPlaceholder" class="text-center text-muted mt-5 pt-4">
+                    <i class="fa-solid fa-shield-virus fa-3x mb-3 opacity-50"></i>
+                    <p>Ready to analyze packets...</p>
+                </div>
+
+                <!-- Result Content -->
+                <div id="idsResult" class="d-none">
+                    <div class="row align-items-center mb-4">
+                        <div class="col-md-6 text-center text-md-start">
+                            <p class="text-muted text-uppercase small m-0 fw-bold">Classification</p>
+                            <h2 id="idsPredictionBadge" class="fw-bold mb-1">DDoS</h2>
+                            <p class="m-0">Threat: <span id="idsThreatLevel" class="badge bg-danger rounded-pill px-3">High</span></p>
+                        </div>
+                        <div class="col-md-6 mt-3 mt-md-0">
+                            <div class="glass-alert p-3 rounded-3 border-0 text-center">
+                                <p class="text-muted small m-0 mb-1">Overall Model Confidence</p>
+                                <h3 id="idsConfidenceScore" class="m-0 text-accent fw-bold">0%</h3>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h6 class="border-bottom border-secondary pb-2 mb-3">Top Predictions Breakdown</h6>
+                    
+                    <div class="table-responsive">
+                        <table class="table table-dark table-borderless table-hover custom-table">
+                            <thead>
+                                <tr>
+                                    <th>Rank</th>
+                                    <th>Attack Vector</th>
+                                    <th>Probability</th>
+                                    <th>Bar</th>
+                                </tr>
+                            </thead>
+                            <tbody id="idsTopPredictionsTable">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

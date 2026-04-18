@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+
+{% block title %}Phishing Detection{% endblock %}
+{% block page_heading %}NLP Phishing Email Analyzer{% endblock %}
+
+{% block content %}
+<div class="container-fluid p-0">
+    <div class="row g-4">
+        <div class="col-md-7">
+            <div class="glass-card p-4 h-100">
+                <h5 class="mb-3">Simulate Incoming Email</h5>
+                <p class="text-muted font-sm">Enter the raw text or full payload of an email below. The NLP model (TF-IDF + Random Forest) will evaluate the characteristics and structural keywords to detect malicious phishing attempts.</p>
+                
+                <form id="phishingForm">
+                    <div class="mb-3">
+                        <textarea id="emailInput" class="form-control glass-input" rows="12" placeholder="Paste email content here... (e.g. 'URGENT: Verify your bank account login credentials click here')"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-accent px-4 py-2 w-100" id="analyzeEmailBtn">
+                        <span class="btn-text">Analyze Email via ML Model</span>
+                        <div class="spinner-border spinner-border-sm ms-2 d-none" id="phishingSpinner" role="status"></div>
+                    </button>
+                </form>
+                
+                <!-- Error Alert -->
+                <div id="phishingError" class="alert alert-danger mt-3 d-none border-0 glass-alert" role="alert"></div>
+            </div>
+        </div>
+
+        <div class="col-md-5">
+            <div class="glass-card p-4 h-100 position-relative">
+                <h5 class="mb-4">AI Prediction Results</h5>
+                
+                <!-- Placeholder state before prediction -->
+                <div id="phishingPlaceholder" class="text-center text-muted mt-5 pt-4">
+                    <i class="fa-solid fa-robot fa-3x mb-3 opacity-50"></i>
+                    <p>Awaiting payload processing...</p>
+                </div>
+
+                <!-- Result Content -->
+                <div id="phishingResult" class="d-none">
+                    <div class="text-center mb-4">
+                        <div id="predictionBadge" class="display-6 fw-bold mb-2">Phishing</div>
+                        <p class="text-muted m-0">Threat Level: <span id="threatLevel" class="fw-bold">High</span></p>
+                    </div>
+
+                    <div class="mb-4">
+                        <div class="d-flex justify-content-between mb-1">
+                            <span class="fw-bold">Model Confidence</span>
+                            <span id="confidenceScore" class="fw-bold text-accent">0%</span>
+                        </div>
+                        <div class="progress custom-progress" style="height: 10px;">
+                            <div id="confidenceBar" class="progress-bar bg-accent" role="progressbar" style="width: 0%;"></div>
+                        </div>
+                    </div>
+
+                    <h6 class="border-bottom border-secondary pb-2 mb-3">Probability Breakdown</h6>
+                    <div class="d-flex justify-content-between mb-1 small">
+                        <span>Phishing Match</span>
+                        <span id="probPhish">0%</span>
+                    </div>
+                    <div class="progress custom-progress mb-3" style="height: 6px;">
+                        <div id="barPhish" class="progress-bar bg-danger" role="progressbar" style="width: 0%;"></div>
+                    </div>
+
+                    <div class="d-flex justify-content-between mb-1 small">
+                        <span>Legitimate Match</span>
+                        <span id="probLegit">0%</span>
+                    </div>
+                    <div class="progress custom-progress" style="height: 6px;">
+                        <div id="barLegit" class="progress-bar bg-success" role="progressbar" style="width: 0%;"></div>
+                    </div>
+                    
+                    <div class="alert mt-4 glass-alert result-alert" id="resultMessageBox" role="alert">
+                        <i class="fa-solid fa-circle-exclamation me-2"></i> <span id="resultMessageText">Action recommended.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
