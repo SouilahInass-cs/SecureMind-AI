@@ -35,8 +35,12 @@ except Exception as e:
 # ROUTES
 # ==========================================
 @app.route('/')
-def dashboard():
+def home():
     return render_template('index.html')
+
+@app.route("/dashboard")
+def dashboard():
+    return render_template("dashboard.html")
 
 @app.route('/phishing')
 def phishing():
