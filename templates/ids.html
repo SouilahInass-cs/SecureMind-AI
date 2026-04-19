@@ -1,507 +1,251 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Intrusion Detection | SecureMind AI</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-  <style>
-    .ids-hero {
-      padding-top: 100px;
-      padding-bottom: 48px;
-      border-bottom: 1px solid var(--border-color);
-      background: radial-gradient(ellipse 60% 40% at 80% 50%, rgba(56,189,248,0.05) 0%, transparent 70%),
-                  radial-gradient(ellipse 40% 60% at 10% 80%, rgba(0,255,136,0.04) 0%, transparent 60%);
-    }
-    .ids-badge {
-      display: inline-flex; align-items: center; gap: 8px;
-      background: rgba(56,189,248,0.07); border: 1px solid rgba(56,189,248,0.2);
-      color: var(--accent-blue); font-family: 'JetBrains Mono', monospace;
-      font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase;
-      padding: 5px 12px; margin-bottom: 20px;
-    }
-    .ids-badge .dot {
-      width: 6px; height: 6px; border-radius: 50%;
-      background: var(--accent-blue); animation: blink 1.8s ease-in-out infinite;
-    }
-    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
-    .ids-stats-strip {
-      display: flex; border: 1px solid var(--border-color);
-      background: var(--bg-secondary); margin-bottom: 32px;
-    }
-    .ids-stat {
-      flex: 1; padding: 16px 20px;
-      border-right: 1px solid var(--border-color); text-align: center;
-    }
-    .ids-stat:last-child { border-right: none; }
-    .ids-stat-value {
-      font-family: 'JetBrains Mono', monospace; font-size: 1.4rem;
-      font-weight: 700; line-height: 1; margin-bottom: 4px;
-    }
-    .ids-stat-label {
-      font-family: 'JetBrains Mono', monospace; font-size: 0.68rem;
-      letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-gray-500);
-    }
-    .sim-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 12px; margin-bottom: 12px; }
-    .sim-btn {
-      display: flex; flex-direction: column; align-items: flex-start; gap: 6px;
-      padding: 18px 20px; background: var(--bg-secondary);
-      border: 1px solid var(--border-color); color: var(--text-gray-300);
-      font-family: 'Inter', sans-serif; cursor: pointer;
-      transition: all 0.18s ease; text-align: left; position: relative; overflow: hidden;
-    }
-    .sim-btn::before {
-      content: ''; position: absolute; top: 0; left: 0;
-      width: 3px; height: 100%; background: var(--border-color); transition: background 0.18s;
-    }
-    .sim-btn:hover { border-color: #555; transform: translateY(-1px); }
-    .sim-btn-wide { grid-column: 1 / -1; }
-    .sim-btn.type-normal::before  { background: var(--accent-green); }
-    .sim-btn.type-attack::before  { background: var(--accent-red); }
-    .sim-btn.type-medium::before  { background: #ffaa00; }
-    .sim-btn.type-normal { border-color: rgba(0,255,136,0.15); }
-    .sim-btn.type-attack { border-color: rgba(255,59,92,0.15); }
-    .sim-btn.type-medium { border-color: rgba(255,170,0,0.15); }
-    .sim-btn.type-normal:hover { border-color: rgba(0,255,136,0.4); box-shadow: 0 4px 16px rgba(0,255,136,0.08); }
-    .sim-btn.type-attack:hover { border-color: rgba(255,59,92,0.4);  box-shadow: 0 4px 16px rgba(255,59,92,0.08); }
-    .sim-btn.type-medium:hover { border-color: rgba(255,170,0,0.4);  box-shadow: 0 4px 16px rgba(255,170,0,0.08); }
-    .sim-btn .btn-title { font-size: 0.88rem; font-weight: 600; color: var(--text-white); }
-    .sim-btn .btn-meta  { font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; color: var(--text-gray-500); letter-spacing: 0.05em; }
-    .sim-btn.active-loading { opacity: 0.6; pointer-events: none; }
-    .info-panel { background: var(--bg-secondary); border: 1px solid var(--border-color); padding: 20px; }
-    .info-panel-title {
-      font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; letter-spacing: 0.14em;
-      text-transform: uppercase; color: var(--text-gray-500);
-      margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid var(--border-color);
-    }
-    .feature-item {
-      display: flex; align-items: center; gap: 10px; padding: 7px 0;
-      border-bottom: 1px solid rgba(255,255,255,0.03); font-size: 0.83rem;
-    }
-    .feature-item:last-child { border-bottom: none; }
-    .feature-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--accent-blue); flex-shrink: 0; }
-    .result-panel { background: var(--bg-secondary); border: 1px solid var(--border-color); overflow: hidden; position: relative; }
-    .result-panel-header {
-      padding: 14px 20px; border-bottom: 1px solid var(--border-color);
-      background: var(--bg-primary); display: flex; align-items: center; justify-content: space-between;
-    }
-    .result-panel-title {
-      font-family: 'JetBrains Mono', monospace; font-size: 0.7rem;
-      letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-gray-500);
-    }
-    .result-timestamp { font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; color: var(--text-gray-500); }
-    .result-placeholder {
-      display: flex; flex-direction: column; align-items: center;
-      justify-content: center; padding: 60px 24px; text-align: center;
-    }
-    .placeholder-icon-box {
-      width: 56px; height: 56px; border: 1px solid var(--border-color);
-      background: var(--bg-primary); display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;
-    }
-    .result-panel-body { padding: 24px; }
-    .verdict-row {
-      display: flex; align-items: center; justify-content: space-between;
-      margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid var(--border-color);
-    }
-    .verdict-label {
-      font-family: 'JetBrains Mono', monospace; font-size: 0.65rem;
-      letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-gray-500); margin-bottom: 6px;
-    }
-    .verdict-value { font-family: 'JetBrains Mono', monospace; font-size: 1.6rem; font-weight: 700; line-height: 1; }
-    .threat-pill {
-      display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px;
-      font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; font-weight: 700;
-      letter-spacing: 0.1em; border: 1px solid;
-    }
-    .threat-low      { color: var(--accent-green); border-color: rgba(0,255,136,0.3);  background: rgba(0,255,136,0.06); }
-    .threat-medium   { color: #ffaa00;              border-color: rgba(255,170,0,0.3);  background: rgba(255,170,0,0.06); }
-    .threat-high     { color: var(--accent-red);    border-color: rgba(255,59,92,0.3);  background: rgba(255,59,92,0.06); }
-    .threat-critical { color: #ff0040;              border-color: rgba(255,0,64,0.4);   background: rgba(255,0,64,0.08); }
-    .confidence-block {
-      text-align: center; padding: 20px 16px; background: var(--bg-primary);
-      border: 1px solid var(--border-color); margin-bottom: 20px;
-    }
-    .confidence-number {
-      font-family: 'JetBrains Mono', monospace; font-size: 3rem;
-      font-weight: 700; line-height: 1; margin-bottom: 4px;
-    }
-    .confidence-sub {
-      font-family: 'JetBrains Mono', monospace; font-size: 0.65rem;
-      letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-gray-500);
-    }
-    .pred-section-title {
-      font-family: 'JetBrains Mono', monospace; font-size: 0.68rem;
-      letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-gray-500); margin-bottom: 14px;
-    }
-    .pred-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
-    .pred-rank { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--text-gray-500); width: 20px; flex-shrink: 0; }
-    .pred-label { font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; width: 140px; flex-shrink: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .pred-label.primary { color: var(--text-white); font-weight: 700; }
-    .pred-label.secondary { color: var(--text-gray-400); }
-    .pred-bar-track { flex: 1; height: 5px; background: rgba(255,255,255,0.05); }
-    .pred-bar-fill { height: 100%; transition: width 0.7s cubic-bezier(0.4,0,0.2,1); }
-    .pred-prob { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--text-gray-400); width: 44px; text-align: right; flex-shrink: 0; }
-    .ids-alert { display: flex; align-items: flex-start; gap: 12px; padding: 14px 16px; margin-top: 16px; border: 1px solid; }
-    .ids-alert-icon { font-size: 15px; flex-shrink: 0; margin-top: 1px; }
-    .ids-alert-text { font-size: 0.82rem; line-height: 1.5; }
-    .ids-alert-text strong { display: block; font-size: 0.78rem; letter-spacing: 0.04em; margin-bottom: 2px; }
-    .ids-alert.safe     { border-color: rgba(0,255,136,0.2); background: rgba(0,255,136,0.04); color: var(--accent-green); }
-    .ids-alert.medium   { border-color: rgba(255,170,0,0.2); background: rgba(255,170,0,0.04); color: #ffaa00; }
-    .ids-alert.danger   { border-color: rgba(255,59,92,0.2);  background: rgba(255,59,92,0.04); color: var(--accent-red); }
-    .ids-alert.critical { border-color: rgba(255,0,64,0.3);   background: rgba(255,0,64,0.06);  color: #ff0040; }
-    .ids-loader {
-      position: absolute; inset: 0; background: rgba(10,15,30,0.88);
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      z-index: 10; backdrop-filter: blur(2px);
-    }
-    .spinner-ring {
-      width: 40px; height: 40px; border: 2px solid rgba(56,189,248,0.15);
-      border-top-color: var(--accent-blue); border-radius: 50%;
-      animation: spin 0.7s linear infinite; margin-bottom: 14px;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    .loader-text { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--accent-blue); letter-spacing: 0.1em; }
-    .ids-error-box {
-      display: none; padding: 12px 16px; background: rgba(255,59,92,0.06);
-      border: 1px solid rgba(255,59,92,0.2); font-family: 'JetBrains Mono', monospace;
-      font-size: 0.75rem; color: var(--accent-red); margin-top: 12px;
-    }
-    .analyzed-section { background: var(--bg-secondary); border: 1px solid var(--border-color); border-top: 2px solid var(--accent-blue); }
-    .analyzed-grid { display: grid; grid-template-columns: repeat(3,1fr); }
-    .analyzed-item {
-      padding: 20px 22px; border-right: 1px solid var(--border-color);
-      border-bottom: 1px solid var(--border-color);
-    }
-    .analyzed-item:nth-child(3n)    { border-right: none; }
-    .analyzed-item:nth-last-child(-n+3) { border-bottom: none; }
-    .analyzed-item-icon { font-size: 1rem; color: var(--accent-blue); margin-bottom: 8px; }
-    .analyzed-item-title { font-size: 0.85rem; font-weight: 600; color: var(--text-white); margin-bottom: 4px; }
-    .analyzed-item-desc  { font-size: 0.78rem; color: var(--text-gray-500); line-height: 1.5; }
-    .sim-note {
-      background: var(--bg-primary); border: 1px solid var(--border-color);
-      border-left: 2px solid var(--accent-blue); padding: 12px 16px;
-      font-family: 'JetBrains Mono', monospace; font-size: 0.72rem;
-      color: var(--text-gray-500); line-height: 1.6;
-    }
-    @keyframes fadeInUp { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
-    .fade-in-up { animation: fadeInUp 0.35s ease forwards; }
-    @media(max-width:768px){
-      .sim-grid{grid-template-columns:1fr}
-      .analyzed-grid{grid-template-columns:1fr 1fr}
-      .ids-stats-strip{flex-wrap:wrap}
-      .ids-stat{border-bottom:1px solid var(--border-color)}
-      .verdict-row{flex-direction:column;align-items:flex-start;gap:12px}
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Network Intrusion Detection | SecureMind AI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        /* Strict adherence to dark cybersecurity requirements */
+        body { background-color: #000000 !important; color: #d1d5db; }
+        .bg-darker { background-color: #080707 !important; }
+        .navbar { background-color: rgba(0,0,0,0.95) !important; border-bottom: 1px solid #30363d !important; }
+        
+        .text-accent-cyber { color: #00ff41 !important; }
+        .border-accent-cyber { border-color: #00ff41 !important; }
+        .bg-accent-cyber { background-color: #00ff41 !important; }
+        
+        .btn-accent-cyber {
+            background-color: #00ff41; color: #000; border: 1px solid #00ff41;
+            transition: all 0.2s ease;
+        }
+        .btn-accent-cyber:hover:not([disabled]) {
+            background-color: transparent; color: #00ff41;
+            box-shadow: 0 0 15px rgba(0, 255, 65, 0.4); border-color: #00ff41;
+        }
+        .btn-accent-cyber[disabled] { opacity: 0.5; border-color: #30363d; background-color: #30363d; color: #888; }
+        
+        .btn-outline-cyber {
+            background-color: transparent; color: #00ff41; border: 1px solid #00ff41;
+            transition: all 0.2s ease;
+        }
+        .btn-outline-cyber:hover {
+            background-color: #00ff41; color: #000;
+            box-shadow: 0 0 15px rgba(0, 255, 65, 0.4);
+        }
+        
+        .drag-zone {
+            border: 2px dashed #30363d; padding: 2.5rem; text-align: center;
+            cursor: pointer; transition: all 0.3s ease; background-color: #080707;
+        }
+        .drag-zone.dragover, .drag-zone:hover {
+            border-color: #00ff41; background-color: rgba(0, 255, 65, 0.05);
+        }
+        .drag-zone input[type="file"] { display: none; }
+    </style>
 </head>
-<body>
+<body data-bs-spy="scroll" data-bs-target=".navbar">
 
-  <nav class="navbar navbar-expand-lg fixed-top sm-navbar" id="main-nav">
-    <div class="container">
-      <a class="navbar-brand text-white fw-bold d-flex align-items-center" href="/">
-        <i class="fa-solid fa-shield-halved text-accent-green me-2"></i>SecureMind AI
-      </a>
-      <button class="navbar-toggler shadow-none border-secondary" type="button"
-        data-bs-toggle="collapse" data-bs-target="#navbarContent">
-        <i class="fa-solid fa-bars text-white"></i>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarContent">
-        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-          <li class="nav-item"><a class="nav-link text-light" href="/">Dashboard</a></li>
-          <li class="nav-item"><a class="nav-link text-light" href="/phishing">Phishing Detection</a></li>
-          <li class="nav-item"><a class="nav-link text-light active" href="/ids">Intrusion Detection</a></li>
-          <li class="nav-item"><a class="nav-link text-light" href="/#about">About</a></li>
-        </ul>
-        <div class="d-flex align-items-center gap-3">
-          <a href="/" class="btn btn-outline-accent-green btn-sm rounded-0 fw-bold px-3">Live Demo</a>
-          <a href="https://github.com" target="_blank" class="text-white fs-4 github-link"><i class="fa-brands fa-github"></i></a>
-        </div>
-      </div>
-    </div>
-  </nav>
-
-  <section class="ids-hero">
-    <div class="container">
-      <div class="ids-badge"><span class="dot"></span>CICIDS2017 · Random Forest · 99.86% Accuracy</div>
-      <h1 class="display-5 fw-bold text-white mb-3">Network Intrusion Detection System</h1>
-      <p class="text-gray-400 mb-0" style="max-width:620px;font-size:.95rem;line-height:1.7;">
-        SecureMind AI analyzes network traffic using a Random Forest model trained on the CICIDS2017 dataset.
-        It detects anomalies and classifies traffic into multiple attack categories in real-time
-        using 47 features extracted from bidirectional network flows.
-      </p>
-    </div>
-  </section>
-
-  <div class="container" style="padding-top:36px;padding-bottom:80px;">
-
-    <div class="ids-stats-strip mb-4">
-      <div class="ids-stat"><div class="ids-stat-value text-accent-blue">2.52M</div><div class="ids-stat-label">Training Flows</div></div>
-      <div class="ids-stat"><div class="ids-stat-value text-accent-green">99.86%</div><div class="ids-stat-label">Test Accuracy</div></div>
-      <div class="ids-stat"><div class="ids-stat-value" style="color:#ffaa00;">47</div><div class="ids-stat-label">Features Used</div></div>
-      <div class="ids-stat"><div class="ids-stat-value text-accent-red">9</div><div class="ids-stat-label">Threat Classes</div></div>
-      <div class="ids-stat"><div class="ids-stat-value text-accent-green">RF</div><div class="ids-stat-label">Model Type</div></div>
-    </div>
-
-    <div class="row g-4">
-
-      <!-- LEFT -->
-      <div class="col-lg-5">
-        <div class="info-panel mb-4">
-          <div class="info-panel-title"><i class="fa-solid fa-satellite-dish me-2"></i>Traffic Simulation — Select Scenario</div>
-          <div class="sim-grid">
-            <button class="sim-btn type-normal sim-btn-wide" onclick="runSim('normal',this)">
-              <span style="font-size:1.1rem;margin-bottom:2px;">🟢</span>
-              <span class="btn-title">Normal Traffic Test</span>
-              <span class="btn-meta">BENIGN FLOW · PORT 80 · HTTP</span>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg fixed-top sm-navbar" id="main-nav">
+        <div class="container">
+            <a class="navbar-brand text-white fw-bold d-flex align-items-center" href="/">
+                <i class="fa-solid fa-shield-halved text-accent-cyber me-2"></i>
+                SecureMind AI
+            </a>
+            <button class="navbar-toggler shadow-none border-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+                <i class="fa-solid fa-bars text-white"></i>
             </button>
-            <button class="sim-btn type-attack" onclick="runSim('ddos',this)">
-              <span style="font-size:1.1rem;margin-bottom:2px;">🔴</span>
-              <span class="btn-title">DDoS Attack</span>
-              <span class="btn-meta">HULK / LOIC · HIGH VOLUME</span>
-            </button>
-            <button class="sim-btn type-attack" onclick="runSim('portscan',this)">
-              <span style="font-size:1.1rem;margin-bottom:2px;">🔴</span>
-              <span class="btn-title">Port Scan</span>
-              <span class="btn-meta">NMAP · SYN STEALTH SCAN</span>
-            </button>
-            <button class="sim-btn type-attack" onclick="runSim('bruteforce',this)">
-              <span style="font-size:1.1rem;margin-bottom:2px;">🔴</span>
-              <span class="btn-title">Brute Force</span>
-              <span class="btn-meta">SSH / FTP · AUTH ATTACK</span>
-            </button>
-            <button class="sim-btn type-medium sim-btn-wide" onclick="runSim('dos',this)">
-              <span style="font-size:1.1rem;margin-bottom:2px;">🟠</span>
-              <span class="btn-title">DoS Attack</span>
-              <span class="btn-meta">SLOWLORIS / GOLDENEYE</span>
-            </button>
-          </div>
-          <div class="ids-error-box" id="ids-error">
-            <i class="fa-solid fa-triangle-exclamation me-2"></i>
-            <span id="ids-error-text">Unable to analyze traffic. Please try again.</span>
-          </div>
-        </div>
-
-        <div class="sim-note mb-4">
-          <i class="fa-solid fa-circle-info me-2" style="color:var(--accent-blue);"></i>
-          This system uses precomputed traffic profiles derived from the CICIDS2017 dataset.
-          Each simulation represents a realistic network scenario used for model evaluation.
-          The backend automatically converts the scenario into 47 standardized flow features.
-        </div>
-
-        <div class="info-panel">
-          <div class="info-panel-title"><i class="fa-solid fa-microchip me-2"></i>Feature Categories Analyzed</div>
-          <div class="feature-item"><div class="feature-dot"></div><span style="font-size:.82rem;"><span class="text-accent-blue font-mono">Flow Duration</span> — Connection lifetime in microseconds</span></div>
-          <div class="feature-item"><div class="feature-dot"></div><span style="font-size:.82rem;"><span class="text-accent-blue font-mono">Packet Lengths</span> — Min, Max, Mean, Variance (Fwd/Bwd)</span></div>
-          <div class="feature-item"><div class="feature-dot"></div><span style="font-size:.82rem;"><span class="text-accent-blue font-mono">IAT Statistics</span> — Inter-Arrival Time patterns</span></div>
-          <div class="feature-item"><div class="feature-dot"></div><span style="font-size:.82rem;"><span class="text-accent-blue font-mono">TCP Flags</span> — SYN, ACK, FIN, RST, PSH counts</span></div>
-          <div class="feature-item"><div class="feature-dot"></div><span style="font-size:.82rem;"><span class="text-accent-blue font-mono">Flow Rates</span> — Bytes/s and Packets/s ratios</span></div>
-          <div class="feature-item"><div class="feature-dot"></div><span style="font-size:.82rem;"><span class="text-accent-blue font-mono">Window Size</span> — Init_Win_bytes forward/backward</span></div>
-        </div>
-      </div>
-
-      <!-- RIGHT -->
-      <div class="col-lg-7">
-        <div class="result-panel" id="result-panel">
-          <div class="result-panel-header">
-            <span class="result-panel-title"><i class="fa-solid fa-chart-bar me-2"></i>Analysis Report</span>
-            <span class="result-timestamp" id="result-timestamp">—</span>
-          </div>
-          <div class="ids-loader d-none" id="ids-loader">
-            <div class="spinner-ring"></div>
-            <div class="loader-text" id="loader-text">INITIALIZING FLOW ANALYSIS...</div>
-          </div>
-          <div id="result-placeholder" class="result-placeholder">
-            <div class="placeholder-icon-box"><i class="fa-solid fa-radar fa-xl" style="color:var(--text-gray-500);"></i></div>
-            <p class="font-mono mb-1" style="font-size:.82rem;color:var(--text-gray-400);">System Ready</p>
-            <p class="text-gray-500" style="font-size:.78rem;max-width:320px;">Select a simulation scenario on the left to begin traffic analysis.</p>
-          </div>
-          <div id="result-content" class="result-panel-body d-none">
-            <div class="verdict-row">
-              <div>
-                <div class="verdict-label">Classification Result</div>
-                <div class="verdict-value" id="result-prediction">—</div>
-              </div>
-              <div>
-                <div class="verdict-label mb-2">Threat Level</div>
-                <div class="threat-pill" id="threat-pill">—</div>
-              </div>
+            <div class="collapse navbar-collapse" id="navbarContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link text-light" href="/">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-light" href="/phishing">Phishing Detection</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-light active" href="/ids">Intrusion Detection</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-light" href="/#about">About</a>
+                    </li>
+                </ul>
+                <div class="d-flex align-items-center gap-3">
+                    <a href="/" class="btn btn-outline-cyber btn-sm rounded-0 fw-bold px-3">Live Demo</a>
+                    <a href="https://github.com" target="_blank" class="text-white fs-4 github-link" aria-label="GitHub Repository"><i class="fa-brands fa-github"></i></a>
+                </div>
             </div>
-            <div class="confidence-block mb-4">
-              <div class="confidence-number" id="confidence-number">—</div>
-              <div class="confidence-sub">Model Confidence Score</div>
-            </div>
-            <div class="mb-4">
-              <div class="pred-section-title">Top Predictions — Class Probabilities</div>
-              <div id="pred-bars"></div>
-            </div>
-            <div class="ids-alert" id="ids-alert">
-              <span class="ids-alert-icon" id="alert-icon">—</span>
-              <div class="ids-alert-text">
-                <strong id="alert-title">—</strong>
-                <span id="alert-body">—</span>
-              </div>
-            </div>
-          </div>
         </div>
-      </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <div class="container pt-5 mt-5">
+        <div class="row pt-5 pb-4">
+            <div class="col-12 text-center">
+                <span class="badge border border-accent-cyber text-accent-cyber bg-transparent rounded-0 font-mono px-3 py-2 mb-3 shadow-none">CICIDS2017 · 47 FEATURES · RANDOM FOREST</span>
+                <h1 class="text-white fw-bold mb-3 font-mono text-uppercase">Network Intrusion Detection Engine</h1>
+                <p class="text-gray-400 max-w-700 mx-auto">Upload raw TCP/UDP flow metrics mapped strictly to 47 feature dimensions. Our ensemble ML model evaluates payload parameters and timing intervals to predict zero-day malicious network signatures in real time.</p>
+            </div>
+        </div>
     </div>
 
-    <!-- WHAT IS ANALYZED -->
-    <div class="analyzed-section mt-4">
-      <div class="info-panel-title" style="padding:16px 22px;border-bottom:1px solid var(--border-color);margin-bottom:0;">
-        <i class="fa-solid fa-magnifying-glass me-2"></i>What Is Being Analyzed?
-      </div>
-      <div class="analyzed-grid">
-        <div class="analyzed-item"><div class="analyzed-item-icon"><i class="fa-solid fa-network-wired"></i></div><div class="analyzed-item-title">Network Packet Flows</div><div class="analyzed-item-desc">Bidirectional traffic flows between source and destination, captured and processed by CICFlowMeter.</div></div>
-        <div class="analyzed-item"><div class="analyzed-item-icon"><i class="fa-solid fa-clock"></i></div><div class="analyzed-item-title">Connection Duration</div><div class="analyzed-item-desc">Lifetime of each TCP/UDP session in microseconds — key indicator of attacks like Slowloris.</div></div>
-        <div class="analyzed-item"><div class="analyzed-item-icon"><i class="fa-solid fa-arrow-right-arrow-left"></i></div><div class="analyzed-item-title">Bytes Sent / Received</div><div class="analyzed-item-desc">Total and per-packet byte counts in both forward and backward directions of the flow.</div></div>
-        <div class="analyzed-item"><div class="analyzed-item-icon"><i class="fa-solid fa-wave-square"></i></div><div class="analyzed-item-title">Packet Timing Patterns</div><div class="analyzed-item-desc">Inter-Arrival Time (IAT) statistics — mean, std, max, min — reveal rhythm of communication.</div></div>
-        <div class="analyzed-item"><div class="analyzed-item-icon"><i class="fa-solid fa-flag"></i></div><div class="analyzed-item-title">Protocol Behavior</div><div class="analyzed-item-desc">TCP flag counts (SYN, ACK, FIN, RST, PSH) expose handshake anomalies and scan patterns.</div></div>
-        <div class="analyzed-item"><div class="analyzed-item-icon"><i class="fa-solid fa-gauge-high"></i></div><div class="analyzed-item-title">Flow Rate Statistics</div><div class="analyzed-item-desc">Bytes/s and Packets/s ratios identify flooding attacks through abnormally high throughput values.</div></div>
-      </div>
+    <!-- Stats Bar -->
+    <div class="container-fluid border-top border-bottom border-secondary bg-darker py-3 mb-5">
+        <div class="container">
+            <div class="row text-center border-secondary font-mono small">
+                <div class="col-md-3 col-6 border-end border-secondary py-2"><span class="text-accent-cyber fw-bold fs-5 d-block">2.52M</span> Training Flows</div>
+                <div class="col-md-3 col-6 border-end border-secondary py-2"><span class="text-accent-cyber fw-bold fs-5 d-block">47</span> Features</div>
+                <div class="col-md-3 col-6 border-end border-secondary py-2"><span class="text-accent-cyber fw-bold fs-5 d-block">9</span> Threat Classes</div>
+                <div class="col-md-3 col-6 py-2"><span class="text-accent-cyber fw-bold fs-5 d-block">99.86%</span> Accuracy</div>
+            </div>
+        </div>
     </div>
 
-  </div>
+    <!-- Main Content -->
+    <div class="container module-page mt-2">
+        <div class="row g-5">
+            <!-- Left Pane -->
+            <div class="col-lg-6">
+                <!-- Dropzone -->
+                <div class="mb-4">
+                    <label class="form-label text-white fw-bold font-mono border-bottom border-dark pb-2 d-block border-secondary">Input Payload (CSV Formatting)</label>
+                    <div id="file-dropzone" class="drag-zone mt-3 border border-secondary shadow-none">
+                        <i class="fa-solid fa-file-csv fa-3x text-gray-500 mb-3" id="file-icon"></i>
+                        <h5 class="text-white fw-bold font-mono mt-2">Drag & Drop</h5>
+                        <p class="text-gray-400 small mb-4">Upload a CSV file or click to browse</p>
+                        <input type="file" id="file-input" accept=".csv">
+                        <button class="btn btn-outline-cyber btn-sm rounded-0 font-mono" onclick="document.getElementById('file-input').click()">Browse Local Storage</button>
+                        <div id="file-name" class="mt-3 text-accent-cyber small font-mono d-none"></div>
+                    </div>
+                </div>
+                
+                <div class="mb-4 bg-darker p-3 border border-secondary shadow-none">
+                    <div class="text-gray-400 small mb-2"><i class="fa-solid fa-triangle-exclamation text-warning me-1"></i> Format Requirement:</div>
+                    <p class="text-gray-500 small font-mono mb-2">The CSV must contain 1 header row + strictly 47 numerical columns mapping the parsed flows.</p>
+                    <div class="text-gray-400 font-mono" style="font-size: 0.65rem; white-space: nowrap; overflow-x: auto; background-color: #000; padding: 10px; border: 1px solid #30363d;">
+                        Bwd Packet Len Std, Subflow Fwd Bytes, Flow Duration, Down/Up Ratio, SYN Flag Count...
+                    </div>
+                </div>
 
-  <footer class="footer border-top border-secondary py-5 bg-dark mt-auto">
-    <div class="container">
-      <div class="row align-items-center">
-        <div class="col-md-4 mb-4 mb-md-0">
-          <a class="navbar-brand text-white fw-bold d-flex align-items-center fs-5 mb-2" href="/">
-            <i class="fa-solid fa-shield-halved text-accent-green me-2"></i>SecureMind AI
-          </a>
-          <p class="text-gray-500 small mb-0">AI-Powered Threat Detection. Real-Time. Uncompromising.</p>
+                <div class="mb-4 border border-secondary p-4 bg-darker">
+                    <h6 class="text-white font-mono small border-bottom border-secondary pb-2 mb-3">Feature Extraction Key Insights</h6>
+                    <ul class="list-unstyled text-gray-500 small mb-0 font-mono" style="font-size: 0.75rem;">
+                        <li class="mb-2"><strong class="text-gray-300">Flow Duration:</strong> Time offset marking session persistence (DoS).</li>
+                        <li class="mb-2"><strong class="text-gray-300">Packet Stats:</strong> Std Dev / Mean of FWD/BWD packet payloads linking data exfil.</li>
+                        <li class="mb-2"><strong class="text-gray-300">Flag Counts:</strong> High rates of SYN/RST anomalies (PortScan / Brute Force mapping).</li>
+                        <li><strong class="text-gray-300">Inter-Arrival Time (IAT):</strong> Microsecond gaps defining low/slow attack logic routing.</li>
+                    </ul>
+                </div>
+
+                <button id="analyze-ids-btn" class="btn btn-accent-cyber btn-lg w-100 rounded-0 fw-bold font-mono shadow-none" disabled>Analyze Traffic Payload <i class="fa-solid fa-server ms-2"></i></button>
+            </div>
+            
+            <!-- Right Pane -->
+            <div class="col-lg-6">
+                <!-- Results Container -->
+                <div id="ids-results" class="results-box border-secondary p-5 h-100 position-relative d-flex flex-column bg-darker border" style="background-color: #080707;">
+                    
+                    <!-- Loading Spinner -->
+                    <div id="ids-loader" class="loader-overlay d-none" style="background-color: rgba(0,0,0,0.9);">
+                        <div class="spinner-border text-accent-cyber mb-3" style="width: 3rem; height: 3rem;" role="status"></div>
+                        <div class="text-accent-cyber fw-bold font-mono">Parsing 47 dimensional vectors...</div>
+                    </div>
+                    
+                    <!-- Final Results -->
+                    <div id="ids-final-results" class="d-none d-flex flex-column h-100">
+                        <h5 class="text-gray-300 font-mono mb-4 pb-2 border-bottom border-secondary">Diagnostic Output</h5>
+                        
+                        <div class="result-status mb-5 text-center flex-grow-1">
+                            <div class="display-5 fw-bold font-mono mb-2" id="ids-prediction">NORMAL</div>
+                            <div class="text-gray-400 mt-2 font-mono">Threat Level: <span id="ids-risk" class="fw-bold px-2 py-1 ms-1 border border-secondary shadow-none">LOW</span></div>
+                        </div>
+                        
+                        <div class="mb-5 mt-auto">
+                            <div class="d-flex justify-content-between text-gray-300 mb-2 font-mono small">
+                                <span>Confidence</span>
+                                <span id="ids-confidence-text" class="fw-bold text-accent-cyber">0%</span>
+                            </div>
+                            <div class="progress rounded-0 border border-secondary shadow-none" style="height: 10px; background-color: #000;">
+                                <div id="ids-progress" class="progress-bar bg-accent-cyber progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="top-predictions mt-4">
+                            <h6 class="text-gray-400 border-bottom border-dark pb-2 mb-3 font-mono small">Probability Distribution (Top 3)</h6>
+                            <div id="ids-top-preds" class="font-mono small text-gray-300 d-flex flex-column gap-3 mt-3">
+                                <!-- Injected by JS -->
+                            </div>
+                        </div>
+
+                        <!-- Alert message inserted dynamically -->
+                        <div id="ids-alert-msg" class="alert mt-4 font-mono small rounded-0 border mb-0 text-center bg-transparent border-accent-cyber text-accent-cyber shadow-none">
+                            <i class="fa-solid fa-check me-2"></i> No malicious anomalies detected in flow sample.
+                        </div>
+                    </div>
+
+                    <div id="ids-error" class="alert alert-danger border-danger border bg-darker text-danger font-mono small rounded-0 mt-auto mb-0 d-none shadow-none">
+                        <i class="fa-solid fa-triangle-exclamation me-2"></i>
+                        <span id="ids-error-text">Network or Processing Error. Verify strictly 47 columns.</span>
+                    </div>
+
+                    <!-- Initial placeholder before submit -->
+                    <div id="ids-placeholder" class="d-flex flex-column justify-content-center align-items-center text-center h-100 flex-grow-1">
+                        <i class="fa-solid fa-terminal fa-4x text-gray-600 mb-4"></i>
+                        <h4 class="text-white font-mono shadow-none">System Ready</h4>
+                        <p class="text-gray-500 small max-w-700 shadow-none">Awaiting payload ingestion. Load a dataset row to initiate classification node routing.</p>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="col-md-4 mb-4 mb-md-0 text-md-center">
-          <ul class="list-unstyled mb-0 d-flex justify-content-md-center gap-3">
-            <li><a href="/" class="text-gray-400 text-decoration-none hover-white">Dashboard</a></li>
-            <li><a href="/ids" class="text-gray-400 text-decoration-none hover-white">IDS</a></li>
-            <li><a href="/phishing" class="text-gray-400 text-decoration-none hover-white">Phishing</a></li>
-          </ul>
-        </div>
-        <div class="col-md-4 text-md-end text-gray-500 small font-mono">
-          <div>IDS Acc: <span class="text-accent-blue fw-bold">99.86%</span></div>
-          <div>Phishing Acc: <span class="text-accent-green fw-bold">95.61%</span></div>
-        </div>
-      </div>
     </div>
-  </footer>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  <script>
-    const FV = {
-      normal:     [80,166,1,0,0,0,0,0,0,0,6024,83,0,83,83,0,0,0,0,0,0,0,0,0,0,20,0,0,0,0,0,0,0,0,0,0,1,0,0,0,8192,5840,0,20,0,0,0],
-      ddos:       [80,15,50,3000,60,60,60,60,60,200000,3333,4.5,2.1,15,1,4.5,2.1,1,0,0,0,0,0,0,0,100,0,3333,60,60,60,0,0,1,0,0,1,0,0,0,8192,0,50,20,0,0,0],
-      portscan:   [4444,100,1,0,0,0,0,0,0,0,10000,100,0,100,100,100,0,100,0,0,0,0,0,0,0,20,0,0,0,0,0,0,1,1,1,0,0,0,0,0,1024,0,0,20,0,0,0],
-      bruteforce: [22,500,3,120,40,40,40,0,0,240,6000,167,0,500,100,167,0,100,0,0,0,0,0,0,0,60,0,0,40,40,40,0,0,1,0,0,1,0,0,0,4096,0,3,20,0,0,0],
-      dos:        [80,900000,20,800,40,40,40,0,0,889,22,45000,12000,90000,1000,45000,12000,1000,0,0,0,0,0,0,0,80,0,0,40,40,40,0,0,0,0,0,0,0,0,0,8192,0,20,20,0,0,0]
-    };
-    const LM = {
-      normal:'ANALYZING BENIGN FLOW PROFILE...',ddos:'DETECTING VOLUMETRIC ATTACK...',
-      portscan:'PARSING PORT SCAN SIGNATURE...',bruteforce:'IDENTIFYING AUTH BRUTE FORCE...',dos:'EVALUATING DOS PATTERN...'
-    };
-    const AM = {
-      'Normal Traffic':{cls:'safe',   icon:'✓',title:'Traffic Nominal — No Threat Detected',    body:'Flow characteristics match known benign traffic patterns. Connection behavior is consistent with standard user activity.'},
-      'Normal':        {cls:'safe',   icon:'✓',title:'Traffic Nominal — No Threat Detected',    body:'Flow characteristics match known benign traffic patterns.'},
-      'DDoS':          {cls:'critical',icon:'⚠',title:'Critical: DDoS Attack Detected',         body:'Distributed denial-of-service pattern identified. Abnormally high packet rate. Activate rate limiting and notify NOC immediately.'},
-      'DoS':           {cls:'danger', icon:'⚠',title:'High: DoS Attack Detected',              body:'Denial-of-service flood identified. Connection exhaustion pattern detected. Block source IP and escalate to security team.'},
-      'Port Scanning': {cls:'medium', icon:'!', title:'Medium: Port Scan in Progress',          body:'Systematic port enumeration detected. Likely reconnaissance phase — monitor for follow-up exploitation attempts.'},
-      'Brute Force':   {cls:'danger', icon:'⚠',title:'High: Brute Force Attack Detected',      body:'Credential stuffing pattern identified. Enforce account lockout policy and block source IP address.'},
-      'Bots':          {cls:'medium', icon:'!', title:'Medium: Botnet Activity Detected',       body:'Automated bot traffic pattern identified. Check for command-and-control (C2) communication.'},
-    };
-    const TC = {Low:'threat-low',Medium:'threat-medium',High:'threat-high',Critical:'threat-critical'};
+    <!-- Bottom Section -->
+    <div class="container-fluid border-top border-secondary py-6 bg-darker mt-5">
+        <div class="container">
+            <h3 class="text-white font-mono mb-4 border-start border-accent-cyber ps-3 border-4">Why Real-Time Analysis Is Critical</h3>
+            <div class="row g-5 text-gray-400 small pt-3">
+                <div class="col-md-6 border-end border-secondary">
+                    <p class="pe-3">Modern cyber attacks evolve faster than signature-based firewalls can be updated. DDoS storms build within seconds, while slow-burn stealth connection scans operate beneath standard detection thresholds. Machine learning processes these interconnected heuristics synchronously.</p>
+                </div>
+                <div class="col-md-6">
+                    <p class="ps-3">By mapping 47 features of a network connection — evaluating subflow variances, payload standard deviations, and TCP flag clusters — SecureMind AI immediately classifies zero-day exploits before execution payloads impact external cluster integrity.</p>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    async function runSim(scenario, btn) {
-      document.getElementById('ids-error').style.display = 'none';
-      document.getElementById('result-placeholder').classList.add('d-none');
-      document.getElementById('result-content').classList.add('d-none');
-      document.getElementById('ids-loader').classList.remove('d-none');
-      document.getElementById('loader-text').textContent = LM[scenario] || 'ANALYZING...';
-      document.querySelectorAll('.sim-btn').forEach(b => b.classList.remove('active-loading'));
-      btn.classList.add('active-loading');
+    <!-- Footer -->
+    <footer class="footer border-top border-secondary py-5 bg-dark mt-auto" style="background-color: rgba(0,0,0,0.95) !important;">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-4 mb-4 mb-md-0">
+                    <a class="navbar-brand text-white fw-bold d-flex align-items-center fs-5 mb-2" href="/">
+                        <i class="fa-solid fa-shield-halved text-accent-cyber me-2"></i>
+                        SecureMind AI
+                    </a>
+                    <p class="text-gray-500 small mb-0">AI-Powered Threat Detection. Real-Time. Uncompromising.</p>
+                </div>
+                <div class="col-md-4 mb-4 mb-md-0 text-md-center">
+                    <ul class="list-unstyled mb-0 d-flex justify-content-md-center gap-3 footer-links">
+                        <li><a href="/" class="text-gray-400 text-decoration-none hover-white">Dashboard</a></li>
+                        <li><a href="/ids" class="text-gray-400 text-decoration-none hover-white">IDS</a></li>
+                        <li><a href="/phishing" class="text-gray-400 text-decoration-none hover-white">Phishing</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4 text-md-end text-gray-500 small font-mono">
+                    <div>IDS Acc: <span class="text-accent-cyber fw-bold">99.8%</span></div>
+                    <div>Phishing Acc: <span class="text-accent-cyber fw-bold">98.5%</span></div>
+                </div>
+            </div>
+        </div>
+    </footer>
 
-      try {
-        const res = await fetch('/predict_ids', {
-          method:'POST', headers:{'Content-Type':'application/json'},
-          body: JSON.stringify({ features: FV[scenario] || FV.normal })
-        });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || 'HTTP '+res.status);
-        renderResult(data);
-      } catch(err) {
-        document.getElementById('ids-loader').classList.add('d-none');
-        document.getElementById('result-placeholder').classList.remove('d-none');
-        document.getElementById('ids-error-text').textContent = 'Unable to analyze traffic. Please try again. ('+err.message+')';
-        document.getElementById('ids-error').style.display = 'block';
-      } finally {
-        btn.classList.remove('active-loading');
-      }
-    }
-
-    function renderResult(data) {
-      document.getElementById('ids-loader').classList.add('d-none');
-      document.getElementById('result-placeholder').classList.add('d-none');
-      const content = document.getElementById('result-content');
-      content.classList.remove('d-none');
-      content.style.animation = 'none';
-      content.offsetHeight;
-      content.style.animation = 'fadeInUp 0.35s ease forwards';
-
-      const pred = data.prediction || 'Unknown';
-      const conf = parseFloat(data.confidence || 0);
-      const tl   = data.threat_level || 'Unknown';
-      const preds= data.top_predictions || [];
-      const isNormal = pred === 'Normal Traffic' || pred === 'Normal';
-
-      document.getElementById('result-timestamp').textContent =
-        new Date().toISOString().replace('T',' ').substring(0,19)+' UTC';
-
-      const predEl = document.getElementById('result-prediction');
-      predEl.textContent = pred.toUpperCase();
-      predEl.style.color = isNormal ? 'var(--accent-green)' : 'var(--accent-red)';
-
-      const pill = document.getElementById('threat-pill');
-      pill.textContent = '● '+tl.toUpperCase();
-      pill.className = 'threat-pill '+(TC[tl]||'threat-high');
-
-      const confEl = document.getElementById('confidence-number');
-      confEl.textContent = conf.toFixed(1)+'%';
-      confEl.style.color = isNormal ? 'var(--accent-green)' : tl==='Medium' ? '#ffaa00' : 'var(--accent-red)';
-
-      const barsEl = document.getElementById('pred-bars');
-      barsEl.innerHTML = '';
-      preds.forEach((p,i) => {
-        const label = p.type||p.label||'—';
-        const prob  = parseFloat(p.prob||p.probability||0);
-        const safe  = label==='Normal Traffic'||label==='Normal';
-        const col   = i===0 ? (safe?'#00ff88':prob>50?'#ff3b5c':'#ffaa00') : '#38bdf8';
-        barsEl.innerHTML += `
-          <div class="pred-row">
-            <span class="pred-rank">#${i+1}</span>
-            <span class="pred-label ${i===0?'primary':'secondary'}" title="${label}">${label}</span>
-            <div class="pred-bar-track"><div class="pred-bar-fill" style="width:0%;background:${col};" data-w="${prob}"></div></div>
-            <span class="pred-prob">${prob.toFixed(1)}%</span>
-          </div>`;
-      });
-      setTimeout(()=>{ document.querySelectorAll('.pred-bar-fill').forEach(el=>{ el.style.width=el.dataset.w+'%'; }); }, 80);
-
-      const info = AM[pred]||{cls:'danger',icon:'⚠',title:'Threat Detected',body:'Anomalous traffic pattern identified. Manual review recommended.'};
-      const alertEl = document.getElementById('ids-alert');
-      alertEl.className = 'ids-alert '+info.cls;
-      document.getElementById('alert-icon').textContent  = info.icon;
-      document.getElementById('alert-title').textContent = info.title;
-      document.getElementById('alert-body').textContent  = info.body;
-    }
-
-    // Navbar scroll
-    const nav = document.getElementById('main-nav');
-    if(nav) window.addEventListener('scroll', ()=>{
-      nav.style.background = window.scrollY > 50 ? 'rgba(10,15,30,0.97)' : 'var(--bg-primary)';
-      nav.style.borderBottom = window.scrollY > 50 ? '1px solid rgba(255,255,255,0.08)' : '1px solid transparent';
-    });
-  </script>
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>
 </html>
