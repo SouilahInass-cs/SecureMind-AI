@@ -1,145 +1,337 @@
-{% extends 'base.html' %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SecureMind AI | AI-Powered Threat Detection</title>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body data-bs-spy="scroll" data-bs-target=".navbar" data-bs-smooth-scroll="true">
 
-{% block title %}Dashboard{% endblock %}
-{% block page_heading %}Cybersecurity Dashboard{% endblock %}
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg fixed-top sm-navbar" id="main-nav">
+        <div class="container">
+            <a class="navbar-brand text-white fw-bold d-flex align-items-center" href="/">
+                <i class="fa-solid fa-shield-halved text-accent-green me-2"></i>
+                SecureMind AI
+            </a>
+            <button class="navbar-toggler shadow-none border-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+                <i class="fa-solid fa-bars text-white"></i>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link text-light" href="/">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-light" href="/phishing">Phishing Detection</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-light" href="/ids">Intrusion Detection</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-light" href="#about">About</a>
+                    </li>
+                </ul>
+                <div class="d-flex align-items-center gap-3">
+                    <a href="/" class="btn btn-outline-accent-green btn-sm rounded-0 fw-bold px-3">Live Demo</a>
+                    <a href="https://github.com" target="_blank" class="text-white fs-4 github-link" aria-label="GitHub Repository"><i class="fa-brands fa-github"></i></a>
+                </div>
+            </div>
+        </div>
+    </nav>
 
-{% block content %}
-<div class="container-fluid p-0">
-    <!-- Stats Row -->
-    <div class="row g-4 mb-4">
-        <div class="col-md-3">
-            <div class="stat-card glass-card p-4">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <p class="text-muted mb-1 text-uppercase small fw-bold">Emails Analyzed</p>
-                        <h3 class="fw-bold m-0">12,450</h3>
-                        <small class="text-success"><i class="fa-solid fa-arrow-up"></i> 5.2% this week</small>
+    <!-- Hero Section -->
+    <section class="hero-section d-flex align-items-center" id="hero">
+        <div class="hero-grid-bg"></div>
+        <div class="container position-relative z-1">
+            <div class="row align-items-center g-5">
+                <div class="col-lg-6"> 
+                    <h1 class="display-3 fw-bold text-white mb-3">SecureMind-AI</h1>
+                    <h1 class="display-4 fw-bold text-accent-red  mb-3">Cybersecurity Services Company</h1>
+                    <h4 class="text-white fw-normal mb-3">SecureMind AI provides real-time protection against cyber threats using advanced machine learning models.</h4>
+                    <p class="lead text-gray-400 mb-4 fs-6">Combining network traffic analysis and intelligent email inspection, SecureMind AI delivers a unified cybersecurity solution capable of identifying sophisticated attacks with high accuracy and minimal latency.</p>
+                    <div class="d-flex flex-wrap gap-3 mb-5">
+                        <a href="#defense" class="btn btn-accent-green rounded-0 px-4 py-2 fw-bold">Explore Modules</a>
+                        <a href="https://github.com" class="btn btn-outline-light rounded-0 px-4 py-2">View on GitHub</a>
                     </div>
-                    <div class="icon-box bg-accent-glow">
-                        <i class="fa-solid fa-envelope text-white"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="stat-card glass-card p-4">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <p class="text-muted mb-1 text-uppercase small fw-bold">Phishing Blocked</p>
-                        <h3 class="fw-bold m-0 text-danger">1,832</h3>
-                        <small class="text-danger"><i class="fa-solid fa-arrow-up"></i> 12.1% this week</small>
-                    </div>
-                    <div class="icon-box bg-danger-glow">
-                        <i class="fa-solid fa-bug text-white"></i>
+                    <div class="d-flex gap-3 hero-badges flex-wrap">
+                        <div class="badge-custom"><i class="fa-solid fa-crosshairs text-accent-green"></i> 99.8% Accuracy</div>
+                        <div class="badge-custom"><i class="fa-solid fa-network-wired text-accent-blue"></i> 2.8M Flows</div>
+                        <div class="badge-custom"><i class="fa-solid fa-bug text-accent-red"></i> 14 Threat Classes</div>
                     </div>
                 </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="stat-card glass-card p-4">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <p class="text-muted mb-1 text-uppercase small fw-bold">Network Attacks</p>
-                        <h3 class="fw-bold m-0 text-warning">4,204</h3>
-                        <small class="text-success"><i class="fa-solid fa-arrow-down"></i> 2.4% this week</small>
-                    </div>
-                    <div class="icon-box bg-warning-glow">
-                        <i class="fa-solid fa-shield-virus text-white"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="stat-card glass-card p-4">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <p class="text-muted mb-1 text-uppercase small fw-bold">Normal Traffic</p>
-                        <h3 class="fw-bold m-0 text-accent">845.2K</h3>
-                        <small class="text-success"><i class="fa-solid fa-arrow-up"></i> 18.2% this week</small>
-                    </div>
-                    <div class="icon-box bg-secondary-glow">
-                        <i class="fa-solid fa-server text-white"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
+                <!-- Terminal Visualization -->
+               <div class="col-lg-6 position-relative d-flex justify-content-center align-items-center">
+
+    <!-- Glow background effect -->
+    <div class="position-absolute top-50 start-50 translate-middle"
+         style="width:400px;height:400px;
+         background: rgba(0,255,136,0.15);
+         filter: blur(80px);
+         border-radius:0%;
+         z-index:0;">
     </div>
 
-    <!-- Charts Row -->
-    <div class="row g-4 mb-4">
-        <div class="col-md-6">
-            <div class="glass-card p-4 h-100">
-                <h5 class="mb-4">Email Traffic Distribution</h5>
-                <div style="height: 300px; display: flex; justify-content: center;">
-                    <canvas id="phishingPieChart"></canvas>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div class="glass-card p-4 h-100">
-                <h5 class="mb-4">Top Network Attacks Detected</h5>
-                <div style="height: 300px;">
-                    <canvas id="idsBarChart"></canvas>
-                </div>
-            </div>
-        </div>
-    </div>
+    <!-- Image -->
+    <img 
+        src="https://images.unsplash.com/photo-1655036387197-566206c80980?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1200"
+        alt="SecureMind AI Cybersecurity"
+        class="img-fluid"
+        style="
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.6), 0 0 30px #00ff41;
+            position: relative;
+            z-index: 1;
+        "
+    >
 
-    <!-- Table Row -->
-    <div class="row">
-        <div class="col-12">
-            <div class="glass-card p-4">
-                <h5 class="mb-4">Recent Threat Activity</h5>
-                <div class="table-responsive">
-                    <table class="table table-dark table-hover table-borderless custom-table m-0">
-                        <thead>
-                            <tr>
-                                <th>Timestamp</th>
-                                <th>Threat Vector</th>
-                                <th>Source IP / Sender</th>
-                                <th>Target</th>
-                                <th>Status</th>
-                                <th>Confidence</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>2023-10-27 14:32:01</td>
-                                <td><span class="badge bg-danger">Phishing</span></td>
-                                <td>support@paypal-login-sys.com</td>
-                                <td>admin@university.edu</td>
-                                <td>Blocked</td>
-                                <td>99.2%</td>
-                            </tr>
-                            <tr>
-                                <td>2023-10-27 14:15:22</td>
-                                <td><span class="badge bg-warning">DDoS Simulation</span></td>
-                                <td>192.168.1.105</td>
-                                <td>Gateway Node</td>
-                                <td>Mitigated</td>
-                                <td>94.8%</td>
-                            </tr>
-                            <tr>
-                                <td>2023-10-27 13:42:10</td>
-                                <td><span class="badge bg-info text-dark">PortScan</span></td>
-                                <td>45.33.22.11</td>
-                                <td>App Server UI</td>
-                                <td>Logged</td>
-                                <td>88.1%</td>
-                            </tr>
-                            <tr>
-                                <td>2023-10-27 13:10:05</td>
-                                <td><span class="badge bg-danger">Brute Force</span></td>
-                                <td>10.0.0.52</td>
-                                <td>SSH Port 22</td>
-                                <td>Blocked IP</td>
-                                <td>97.5%</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
 </div>
-{% endblock %}
+            </div>
+        </div>
+    </section>
+
+    <!-- Dual-Layer Cyber Defense System -->
+    <section class="features-section py-6" id="defense">
+        <div class="container">
+            <h1 class="text-center text-white mb-5 fw-bold">Dual-Layer <span class="display-5 fw-bold text-accent-red  mb-5">AI Cyber Defense System</span></h1>
+            <div class="row g-5">
+                <!-- IDS Module -->
+                <div class="col-md-6">
+                    <div class="feature-card border-accent-green h-100">
+                        <div class="card-icon text-accent-green mb-4"><i class="fa-solid fa-network-wired fa-3x"></i></div>
+                        <h3 class="text-white mb-3">Network Intrusion Detection</h3>
+                        <p class="text-gray-400">Trained on the CICIDS2017 dataset, our Random Forest model analyzes network traffic patterns to detect anomalies and classify multiple attack types in real-time.</p>
+                        <ul class="list-unstyled text-gray-300 feature-list mt-4">
+                            <li><i class="fa-solid fa-check text-accent-green me-2"></i> Detects DDoS, Port Scanning, Brute Force, and Web Attacks</li>
+                            <li><i class="fa-solid fa-check text-accent-green me-2"></i> High-speed bidirectional flow analysis</li>
+                            <li><i class="fa-solid fa-check text-accent-green me-2"></i> Low false-positive rate</li>
+                            <li><i class="fa-solid fa-check text-accent-green me-2"></i> Real-time classification across 9 attack classes</li>
+                        </ul>
+                        <a href="/ids" class="btn btn-outline-accent-green mt-4 rounded-0 w-100 fw-bold">Launch IDS Module <i class="fa-solid fa-arrow-right ms-2"></i></a>
+                    </div>
+                </div>
+                <!-- Phishing Module -->
+                <div class="col-md-6">
+                    <div class="feature-card border-accent-green h-100">
+                        <div class="card-icon text-accent-green mb-4"><i class="fa-solid fa-envelope-open-text fa-3x"></i></div>
+                        <h3 class="text-white mb-3">Phishing Email Detection</h3>
+                        <p class="text-gray-400">Using TF-IDF vectorization and machine learning, this module inspects email content, structure, and intent to identify phishing attempts and malicious links.</p>
+                        <ul class="list-unstyled text-gray-300 feature-list mt-4">
+                            <li><i class="fa-solid fa-check text-accent-green me-2"></i> Deep semantic text analysis</li>
+                            <li><i class="fa-solid fa-check text-accent-green me-2"></i> Suspicious link extraction & validation</li>
+                            <li><i class="fa-solid fa-check text-accent-green me-2"></i> Detection of social engineering patterns</li>
+                            <li><i class="fa-solid fa-check text-accent-green me-2"></i> Real-time inbox threat identification</li>
+                        </ul>
+                        <a href="/phishing" class="btn btn-outline-accent-green mt-4 rounded-0 w-100 fw-bold">Launch Phishing Module <i class="fa-solid fa-arrow-right ms-2"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Interactive Security Modules -->
+    <section class="py-6 bg-darker" id="modules">
+        <div class="container">
+            <h1 class="text-center display-5 text-white mb-5 fw-bold">Interactive <span class="display-5 fw-bold text-accent-red  mb-5">Security Modules</span></h1>
+            <div class="row g-4 justify-content-center">
+                <div class="col-lg-10">
+                    <div class="row g-0 flex-md-row flex-column border border-secondary mb-4 bg-tertiary interactive-card">
+                        <div class="col-md-6 p-4 p-lg-5 d-flex flex-column justify-content-center border-end border-secondary border-md-none border-bottom-md">
+                            <h3 class="text-accent-green fw-bold mb-3">Phishing Detection Page</h3>
+                            <p class="text-gray-400">Analyze email content in real-time to detect phishing attempts. The system evaluates linguistic patterns, malicious links, and suspicious intent to classify emails as legitimate or dangerous with confidence scoring.</p>
+                            <a href="/phishing" class="text-accent-green align-self-start text-decoration-none fw-bold mt-2 hover-white">Try it live →</a>
+                        </div>
+                        <div class="col-md-6 p-4 p-lg-5 d-flex flex-column justify-content-center bg-darker interactive-bg-phish opacity-75">
+                             <div class="terminal-fake text-gray-500 font-mono small">
+                                 > Request intercepted. <br/>
+                                 > Payload extracted: String text.<br/>
+                                 > Vectorizing (TF-IDF)...<br/>
+                                 <span class="text-accent-green">> Threat assessment complete.</span>
+                             </div>
+                        </div>
+                    </div>
+
+                    <div class="row g-0 flex-md-row-reverse flex-column border border-secondary bg-tertiary interactive-card">
+                        <div class="col-md-6 p-4 p-lg-5 d-flex flex-column justify-content-center border-start border-secondary border-md-none border-top-md">
+                            <h3 class="text-accent-green fw-bold mb-3">Intrusion Detection Page</h3>
+                            <p class="text-gray-400">Simulate and analyze network traffic flows to identify cyber attacks. The system processes numerical features extracted from network data and classifies them into multiple threat categories using machine learning.</p>
+                            <a href="/ids" class="text-accent-green align-self-start text-decoration-none fw-bold mt-2 hover-white">Try it live →</a>
+                        </div>
+                        <div class="col-md-6 p-4 p-lg-5 d-flex flex-column justify-content-center bg-darker interactive-bg-ids opacity-75">
+                             <div class="terminal-fake text-gray-500 font-mono small">
+                                 > Flow sequence injected.<br/>
+                                 > Parsing CICFlowMeter outputs.<br/>
+                                 > Forest classifier loaded.<br/>
+                                 <span class="text-accent-green">> Anomaly identified.</span>
+                             </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Why SecureMind AI Matters -->
+    <section class="py-6" id="about">
+        <div class="container">
+            <h1 class="text-center display-5 text-white mb-5 fw-bold">Why<span class="display-5 fw-bold text-accent-red  mb-5"> SecureMind AI Matters</span></h1>
+            <div class="row g-4 text-center">
+                <div class="col-md-4 col-sm-6">
+                    <div class="stat-item h-100 p-4 pt-5 border-secondary card-hover hover-green" style="border-radius: 10px">
+                        <i class="fa-solid fa-chart-line fa-3x text-accent-green mb-4"></i>
+                        <h5 class="text-white fw-bold">Increasing Complexity</h5>
+                        <p class="text-gray-400 small">Cyber attacks are increasing in complexity and frequency, bypassing standard defenses.</p>
+                    </div>
+                </div>
+                <div class="col-md-4 col-sm-6">
+                    <div class="stat-item h-100 p-4 pt-5 border-secondary card-hover hover-green" style="border-radius: 10px">
+                        <i class="fa-solid fa-chart-line fa-3x text-accent-green mb-4"></i>
+                        <h5 class="text-white fw-bold">Outdated Rules</h5>
+                        <p class="text-gray-400 small">Traditional rule-based systems fail against modern, dynamically evolving threats.</p>
+                    </div>
+                </div>
+                <div class="col-md-4 col-sm-6">
+                    <div class="stat-item h-100 p-4 pt-5 border-secondary card-hover hover-green" style="border-radius: 10px">
+                        <i class="fa-solid fa-brain fa-3x text-accent-green mb-4"></i>
+                        <h5 class="text-white fw-bold">Adaptive AI</h5>
+                        <p class="text-gray-400 small">Machine learning enables adaptive and intelligent detection across a wide threat landscape.</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-sm-6">
+                    <div class="stat-item h-100 p-4 pt-5 border-secondary card-hover hover-green" style="border-radius: 10px">
+                        <i class="fa-solid fa-brain fa-3x text-accent-green mb-4"></i>
+                        <h5 class="text-white fw-bold">Real-Time Action</h5>
+                        <p class="text-gray-400 small">Real-time analysis dramatically reduces incident response time and overall damage impact.</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-sm-12">
+                    <div class="stat-item h-100 p-4 pt-5 border-secondary card-hover hover-green" style="border-radius: 10px">
+                        <i class="fa-solid fa-brain fa-3x text-accent-green mb-4"></i>
+                        <h5 class="text-white fw-bold">Unified Platform</h5>
+                        <p class="text-gray-400 small">Unified platforms combine insights to simplify and streamline cybersecurity operations.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats-section py-5 bg-darker border-top border-bottom border-dark">
+        <div class="container">
+            <div class="row text-center g-4">
+                <div class="col-md-3 col-6">
+                    <div class="stat-item border-0 bg-transparent">
+                        <h2 class="stat-number text-accent-green" data-target="2800000">0</h2>
+                        <p class="text-uppercase text-muted small fw-bold">Flows Analyzed</p>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="stat-item border-0 bg-transparent">
+                        <h2 class="stat-number text-accent-green" data-target="99.8">0</h2>
+                        <p class="text-uppercase text-muted small fw-bold">IDS Accuracy (%)</p>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="stat-item border-0 bg-transparent">
+                        <h2 class="stat-number text-accent-green" data-target="98.5">0</h2>
+                        <p class="text-uppercase text-muted small fw-bold">Phishing Accuracy (%)</p>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="stat-item border-0 bg-transparent">
+                        <h2 class="stat-number text-accent-red" data-target="14">0</h2>
+                        <p class="text-uppercase text-muted small fw-bold">Threat Classes</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Dataset & Tech Stack Section -->
+    <section class="tech-section py-6">
+        <div class="container">
+            <div class="row g-5">
+                <div class="col-md-6">
+                    <h3 class="text-white mb-4">Training Ground Truth Datasets</h3>
+                    <div class="dataset-card mb-3">
+                        <h5 class="text-accent-green">CICIDS2017 Dataset</h5>
+                        <p class="text-gray-400 small">A comprehensive network traffic dataset encompassing benign activity and common attacks, highly resembling true real-world data captures (PCAPs).</p>
+                        <a href="https://www.unb.ca/cic/datasets/ids-2017.html" target="_blank" class="text-accent-green text-decoration-none small">View Source Dataset <i class="fa-solid fa-external-link-alt ms-1"></i></a>
+                    </div>
+                    <div class="dataset-card">
+                        <h5 class="text-accent-green">Enron & Phishing Corpus</h5>
+                        <p class="text-gray-400 small">A robust collection mapping legitimate Enron corporate emails with known phishing templates to train complex NLP semantic text extraction routines.</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <h3 class="text-white mb-4">Core Technology Stack</h3>
+                    <div class="d-flex flex-wrap gap-2">
+                        <span class="tech-badge"><i class="fa-brands fa-python me-2"></i> Python 3.x</span>
+                        <span class="tech-badge"><i class="fa-brands fa-python me-2"></i> Flask (Jinja2)</span>
+                        <span class="tech-badge"><i class="fa-solid fa-brain me-2"></i> scikit-learn</span>
+                        <span class="tech-badge"><i class="fa-solid fa-table me-2"></i> pandas</span>
+                        <span class="tech-badge"><i class="fa-solid fa-calculator me-2"></i> numpy</span>
+                        <span class="tech-badge"><i class="fa-solid fa-floppy-disk me-2"></i> joblib</span>
+                        <span class="tech-badge"><i class="fa-brands fa-html5 me-2"></i> HTML5/CSS3</span>
+                        <span class="tech-badge"><i class="fa-brands fa-bootstrap me-2"></i> Bootstrap 5</span>
+                        <span class="tech-badge"><i class="fa-solid fa-chart-column me-2"></i> Chart.js</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section py-6 pb-7 text-center bg-darker border-top border-dark">
+        <div class="container">
+            <h1 class="display-5 fw-bold text-white mb-4">Ready to Detect <span class="display-5 fw-bold text-accent-red  mb-5">Threats?</span></h1>
+            <div class="d-flex justify-content-center gap-3 flex-wrap mt-5">
+                <a href="/" class="btn btn-accent-green btn-lg rounded-0 px-5 fw-bold">Open Dashboard</a>
+                <a href="https://github.com" class="btn btn-outline-light btn-lg rounded-0 px-5">View on GitHub</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer border-top border-secondary py-5 bg-dark">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-4 mb-4 mb-md-0">
+                    <a class="navbar-brand text-white fw-bold d-flex align-items-center fs-5 mb-2" href="/">
+                        <i class="fa-solid fa-shield-halved text-accent-green me-2"></i>
+                        SecureMind AI
+                    </a>
+                    <p class="text-gray-500 small mb-0">AI-Powered Threat Detection. Real-Time. Uncompromising.</p>
+                </div>
+                <div class="col-md-4 mb-4 mb-md-0 text-md-center">
+                    <ul class="list-unstyled mb-0 d-flex justify-content-md-center gap-3 footer-links">
+                        <li><a href="/" class="text-gray-400 text-decoration-none hover-white">Dashboard</a></li>
+                        <li><a href="/ids" class="text-gray-400 text-decoration-none hover-white">IDS</a></li>
+                        <li><a href="/phishing" class="text-gray-400 text-decoration-none hover-white">Phishing</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4 text-md-end text-gray-500 small font-mono">
+                    <div>IDS Acc: <span class="text-accent-blue fw-bold">99.8%</span></div>
+                    <div>Phishing Acc: <span class="text-accent-green fw-bold">98.5%</span></div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Custom JS -->
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
