@@ -76,7 +76,6 @@ def status():
         'message':       'Models OK' if models_loaded else 'Running in mock mode'
     })
 
-
 # ==========================================
 # ENDPOINT PHISHING
 # ==========================================
@@ -309,6 +308,7 @@ def predict_ids():
             'threat_level':    threat,
             'top_predictions': top3,
         })
+    
 
     except Exception as e:
         traceback.print_exc()
